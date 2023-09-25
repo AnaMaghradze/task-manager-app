@@ -1,0 +1,97 @@
+<tm-page-layout>
+  <div header class="header">
+    <h2>Users</h2>
+  </div>
+
+  <div content class="content">
+    <div class="toolbar">
+      <div class="buttons">
+        <button class="btn" (click)="createUser()">
+          <mat-icon
+            aria-hidden="false"
+            aria-label="Example home icon"
+            fontIcon="add"
+            [style]="{ color: '#3E425D' }"></mat-icon>
+        </button>
+        <button class="btn" (click)="editUser(selectedUser)" [disabled]="!selectedUser">
+          <mat-icon
+            aria-hidden="false"
+            aria-label="Example home icon"
+            fontIcon="edit"
+            [style]="{ color: '#3E425D' }"></mat-icon>
+        </button>
+        <button class="btn" (click)="deleteUser(selectedUser)" [disabled]="!selectedUser">
+          <mat-icon
+            aria-hidden="false"
+            aria-label="Example home icon"
+            fontIcon="delete"
+            [style]="{ color: '#ee5d5b' }"></mat-icon>
+        </button>
+      </div>
+      <div class="filter-options">
+        <mat-select
+          id="filter"
+          [(ngModel)]="filter"
+          (ngModelChange)="handleFilter()"
+          [style]="{ 'min-width': '110px' }">
+          <mat-option value="all">All Users</mat-option>
+          <mat-option value="withTask">Task Assigned</mat-option>
+          <mat-option value="withoutTask">Without Task</mat-option>
+        </mat-select>
+      </div>
+    </div>
+    <div class="users-container">
+      <ng-container *ngIf="users$ | async as users; else loading">
+        <table class="animate">
+          <thead>
+            <tr>
+              <th>
+                <div class="center"><img src="task-manager-app/assets/icons/user.png" alt="user" width="25px" />User</div>
+              </th>
+              <th>Assigned Task</th>
+            </tr>
+          </thead>
+          <ng-container *ngIf="users?.length; else noData">
+            <tbody>
+              <tr
+                *ngFor="let user of users | slice: pageStartIndex : pageEndIndex; trackBy: trackByUserId"
+                (click)="selectUser(user)"
+                [cdkContextMenuTriggerFor]="context_menu"
+                [ngClass]="{ selected: user.id === selectedUser?.id }">
+                <td>{{ user.name }}</td>
+                <td>
+                  {{ usersAndTasksMap[user.id] ? usersAndTasksMap[user.id]?.name : 'N/A' }}
+                </td>
+
+                <ng-template #context_menu>
+                  <div class="users-context-menu" cdkMenu>
+                    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="editUser(user)">Modify</button>
+                    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="deleteUser(user)">Delete</button>
+                  </div>
+                </ng-template>
+              </tr>
+            </tbody>
+          </ng-container>
+
+          <ng-template #noData>
+            <p>No Data</p>
+          </ng-template>
+        </table>
+      </ng-container>
+      <ng-template #loading>
+        <p>Loading ...</p>
+      </ng-template>
+    </div>
+  </div>
+
+  <div footer class="footer">
+    <mat-paginator
+      [pageSize]="5"
+      [length]="totalUsers"
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="onPaginatorPageChange($event)"
+      hidePageSize
+      aria-label="Select page">
+    </mat-paginator>
+  </div>
+</tm-page-layout>

@@ -1,0 +1,21 @@
+@import 'src/styles';
+
+.tm-tag {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  color: white;
+  text-align: center;
+  white-space: nowrap;
+
+  cursor: context-menu;
+
+  border: 1px solid transparent;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.2s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+}

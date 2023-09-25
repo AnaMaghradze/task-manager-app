@@ -1,0 +1,179 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$TASK_MANAGER-primary: mat.define-palette(mat.$indigo-palette);
+$TASK_MANAGER-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$TASK_MANAGER-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$TASK_MANAGER-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $TASK_MANAGER-primary,
+      accent: $TASK_MANAGER-accent,
+      warn: $TASK_MANAGER-warn,
+    ),
+  )
+);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($TASK_MANAGER-theme);
+
+@import '_reset.scss';
+@import 'index';
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  color: $secondary-black;
+  background: $primary-black;
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0 10px;
+
+  th {
+    text-align: center;
+    text-transform: capitalize;
+    white-space: nowrap;
+
+    @media screen and (max-width: 768px) {
+      white-space: normal;
+    }
+  }
+
+  th {
+    padding: 20px;
+    border-top: 1px solid $light-purple;
+    border-bottom: 1px solid $light-purple;
+
+    background: $light-blue;
+    text-align: start;
+    color: $secondary-black;
+    font-weight: bold;
+  }
+
+  td {
+    padding: 20px;
+    background: aliceblue;
+    border-top: 1px solid $light-purple;
+    border-bottom: 1px solid $light-purple;
+
+    &:first-of-type {
+      border-left: 1px solid $light-purple;
+    }
+    &:last-of-type {
+      border-right: 1px solid $light-purple;
+    }
+  }
+
+  thead tr th:first-child,
+  tbody tr td:first-child {
+    min-width: 100px;
+    word-break: break-word;
+  }
+
+  tbody tr:hover {
+    &,
+    td {
+      background: $light-purple;
+    }
+  }
+
+  tbody tr.selected {
+    &,
+    td {
+      background: $light-purple;
+    }
+    td:first-of-type {
+      border-left: 5px solid $secondary-black;
+    }
+  }
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  display: flex;
+  padding: 10px;
+  border-radius: $border-radius;
+  border: 1px solid $light-purple;
+}
+
+input.error,
+textarea.error,
+select.error {
+  outline: $primary-red;
+  border: 1px solid $primary-red;
+}
+
+input:invalid {
+  border: 1px solid $primary-red;
+}
+
+label.error {
+  color: $primary-red;
+}
+
+button.btn {
+  background: aliceblue;
+  padding: 6px 10px;
+  border-radius: $border_radius;
+  border: 1px solid lightblue;
+  transition: 0.3s ease;
+  cursor: pointer;
+  &:hover {
+    background: $light-blue;
+  }
+  &:disabled {
+    background: $secondary-gray;
+    cursor: context-menu;
+  }
+  &:disabled:hover {
+    background: $secondary-gray;
+    cursor: context-menu;
+  }
+}
+
+.mat-mdc-paginator,
+.mat-mdc-paginator-container {
+  background: $primary-gray;
+}
+
+/* Classes */
+.rounded-border {
+  border-radius: $border_radius;
+}
+.clickable {
+  cursor: pointer;
+}
+.animate * {
+  transition: 0.3s;
+}

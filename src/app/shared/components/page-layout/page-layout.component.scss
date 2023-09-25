@@ -1,0 +1,25 @@
+@import 'src/styles';
+
+:host {
+  display: block;
+}
+
+.layout-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .header {
+    width: 100%;
+  }
+
+  .content {
+    width: 100%;
+    height: 100%;
+    padding: $padding_regular;
+  }
+
+  .footer {
+    width: 100%;
+  }
+}

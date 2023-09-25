@@ -1,0 +1,28 @@
+<tm-page-layout>
+  <div header class="header">
+    <h2>{{ dialogTitle }}</h2>
+    <mat-icon
+      aria-hidden="false"
+      aria-label="Example home icon"
+      fontIcon="close"
+      [style]="{ color: '#ee5d5b' }"
+      (click)="closeDialog()"></mat-icon>
+  </div>
+  <div content class="content">
+    <form [formGroup]="userForm" class="form-container">
+      <label for="name" [ngClass]="{ error: name.invalid }">User Name:</label>
+      <input type="text" id="name" formControlName="name" required autocomplete="off" aria-autocomplete="none" />
+      <div></div>
+      <ul>
+        <li *ngIf="name.hasError('required')" class="error-message">Name is required.</li>
+        <li *ngIf="name.hasError('minLength') || name.hasError('startsWithLetter')" class="error-message">
+          Name must have at least 3 characters and must start with letter.
+        </li>
+        <li *ngIf="name.hasError('notUnique')" class="error-message">Name must be unique.</li>
+      </ul>
+    </form>
+  </div>
+  <div footer class="footer">
+    <button class="btn" type="submit" [disabled]="userForm.invalid" (click)="saveUser()">Save</button>
+  </div>
+</tm-page-layout>

@@ -1,0 +1,53 @@
+@import 'src/styles';
+
+:host {
+  display: block;
+  background: #fff;
+  border-radius: $border-radius;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $padding_regular;
+  h2 {
+    font-weight: bold;
+    color: $secondary-black;
+  }
+}
+
+.content {
+  width: 100%;
+  display: flex;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: $padding_regular;
+}
+
+.form-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    color: $primary-red;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .form-container {
+    grid-template-columns: 1fr; /* One column for smaller screens */
+  }
+}

@@ -1,0 +1,126 @@
+<tm-page-layout>
+  <div header class="header">
+    <h2>Tasks</h2>
+  </div>
+  <div content class="content">
+    <div class="toolbar rounded-border">
+      <div class="buttons">
+        <button class="btn" (click)="createTask()">
+          <mat-icon
+            aria-hidden="false"
+            aria-label="Example home icon"
+            fontIcon="add"
+            [style]="{ color: '#3E425D' }"></mat-icon>
+        </button>
+        <button class="btn" (click)="editTask(selectedTask)" [disabled]="!selectedTask">
+          <mat-icon
+            aria-hidden="false"
+            aria-label="Example home icon"
+            fontIcon="edit"
+            [style]="{ color: '#3E425D' }"></mat-icon>
+        </button>
+        <button class="btn" (click)="deleteTask(selectedTask)" [disabled]="!selectedTask">
+          <mat-icon
+            aria-hidden="false"
+            aria-label="Example home icon"
+            fontIcon="delete"
+            [style]="{ color: '#ee5d5b' }"></mat-icon>
+        </button>
+      </div>
+      <div class="filter-options">
+        <mat-select [(ngModel)]="stateFilter" (ngModelChange)="handleFilter()" [style]="{ 'min-width': '100px' }">
+          <mat-option [value]="'all'">All States</mat-option>
+          <mat-option [value]="'in queue'">In Queue</mat-option>
+          <mat-option [value]="'In Progress'">In Progress</mat-option>
+          <mat-option [value]="'Done'">Done</mat-option>
+        </mat-select>
+
+        <mat-select [(ngModel)]="priorityFilter" (ngModelChange)="handleFilter()" [style]="{ 'min-width': '110px' }">
+          <mat-option [value]="'all'">All Priorities</mat-option>
+          <mat-option [value]="'high'">High</mat-option>
+          <mat-option [value]="'medium'">Medium</mat-option>
+          <mat-option [value]="'low'">Low</mat-option>
+        </mat-select>
+      </div>
+    </div>
+    <div class="tasks-container">
+      <ng-container *ngIf="tasks$ | async as tasks; else loading">
+        <table class="animate">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Assigned to</th>
+              <th>State</th>
+              <th>Priority</th>
+              <th>Description</th>
+              <th class="clickable" (click)="sort('dateCreated')">
+                <div class="center">
+                  <span>Date Created</span>
+                  <mat-icon
+                    aria-hidden="false"
+                    aria-label="Example home icon"
+                    fontIcon="sort"
+                    [style]="{ color: '#3E425D' }"></mat-icon>
+                </div>
+              </th>
+              <th class="clickable" (click)="sort('dateModified')">
+                <div class="center">
+                  <span>Date Modified</span>
+                  <mat-icon
+                    aria-hidden="false"
+                    aria-label="Example home icon"
+                    fontIcon="sort"
+                    [style]="{ color: '#3E425D' }"></mat-icon>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <ng-container *ngIf="tasks?.length; else noData">
+            <tbody>
+              <tr
+                *ngFor="let task of tasks | slice: pageStartIndex : pageEndIndex; trackBy: trackByTaskId"
+                (click)="selectTask(task)"
+                [cdkContextMenuTriggerFor]="context_menu"
+                [ngClass]="{ selected: task.id === selectedTask?.id }">
+                <td>{{ task.name }}</td>
+                <td>{{ task.assignedUser?.name }}</td>
+                <td><tm-tag [text]="task.state" [tagColor]="getStateTagColor(task.state)"></tm-tag></td>
+                <td><tm-tag [text]="task.priority" [tagColor]="getPriorityTagColor(task.priority)"></tm-tag></td>
+                <td>{{ task.description }}</td>
+                <td>{{ task.dateCreated | date }}</td>
+                <td>{{ task.dateModified | date }}</td>
+
+                <ng-template #context_menu>
+                  <div class="task-context-menu" cdkMenu>
+                    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="duplicateTask(task)">
+                      Duplicate
+                    </button>
+                    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="editTask(task)">Modify</button>
+                    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="deleteTask(task)">Delete</button>
+                  </div>
+                </ng-template>
+              </tr>
+            </tbody>
+          </ng-container>
+
+          <ng-template #noData>
+            <p>No Data</p>
+          </ng-template>
+        </table>
+      </ng-container>
+      <ng-template #loading>
+        <p>Loading ...</p>
+      </ng-template>
+    </div>
+  </div>
+  <div footer class="footer">
+    <mat-paginator
+      [pageSize]="5"
+      [length]="tasksLength"
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="onPaginatorPageChange($event)"
+      hidePageSize
+      aria-label="Select page">
+    </mat-paginator>
+  </div>
+</tm-page-layout>
