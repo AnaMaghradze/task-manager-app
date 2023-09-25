@@ -73,7 +73,7 @@ export class UsersService {
       switchMap(() => {
         const task = this.usersAndTasksMap[userId];
         return task?.id
-          ? this.taskApiService.editTask(userId, {
+          ? this.taskApiService.editTask(task?.id, {
               ...task,
               assignedUser: modifiedUser,
             })

@@ -74,7 +74,7 @@
             </th>
           </tr>
         </thead>
-        <ng-container *ngIf="tasks$ | async as tasks; else noData">
+        <ng-container *ngIf="tasks$ | async as tasks; else loading">
           <tbody>
             <tr
               *ngFor="let task of tasks | slice: pageStartIndex : pageEndIndex; trackBy: trackByTaskId"
@@ -98,10 +98,10 @@
               </ng-template>
             </tr>
           </tbody>
+          <ng-container *ngIf="!tasksLength"> <p>No Data</p></ng-container>
         </ng-container>
-
-        <ng-template #noData>
-          <p>No Data</p>
+        <ng-template #loading>
+          <p>Loading ...</p>
         </ng-template>
       </table>
     </div>
