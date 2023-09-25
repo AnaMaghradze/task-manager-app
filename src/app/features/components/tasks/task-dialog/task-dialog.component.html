@@ -23,17 +23,17 @@
 
       <label for="state" [ngClass]="{ error: taskForm.hasError('invalidState') }">State:</label>
       <mat-chip-listbox id="state" formControlName="state" aria-label="state selection">
-        <mat-chip-option selected>In Queue</mat-chip-option>
-        <mat-chip-option *ngIf="isValidUserAssigned">In Progress</mat-chip-option>
-        <mat-chip-option *ngIf="isValidUserAssigned">Done</mat-chip-option>
+        <mat-chip-option selected [value]="'in queue'">In Queue</mat-chip-option>
+        <mat-chip-option *ngIf="isValidUserAssigned" [value]="'in progress'">In Progress</mat-chip-option>
+        <mat-chip-option *ngIf="isValidUserAssigned" [value]="'done'">Done</mat-chip-option>
       </mat-chip-listbox>
 
       <label for="priority" [ngClass]="{ error: taskForm.controls['priority'].invalid }">Priority:</label>
       <mat-chip-listbox id="priority" formControlName="priority" aria-label="priority selection">
-        <mat-chip-option selected>None</mat-chip-option>
-        <mat-chip-option>High</mat-chip-option>
-        <mat-chip-option>Medium</mat-chip-option>
-        <mat-chip-option>Low</mat-chip-option>
+        <mat-chip-option selected [value]="'none'">None</mat-chip-option>
+        <mat-chip-option [value]="'high'">High</mat-chip-option>
+        <mat-chip-option [value]="'medium'">Medium</mat-chip-option>
+        <mat-chip-option [value]="'low'">Low</mat-chip-option>
       </mat-chip-listbox>
 
       <label for="description">Description:</label>

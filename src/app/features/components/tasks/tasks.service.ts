@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Task, TaskPriority, TaskState, User } from '@core/models';
 import { map, Observable, Subject, takeUntil, tap } from 'rxjs';
-import { TaskDialogComponent } from './task-dialog';
 import { TaskApiService, UserApiService } from '@core/services';
 import { AutoDestroy } from '@core/utils';
-import { Dialog } from '@angular/cdk/dialog';
 
 @Injectable()
 export class TasksService {
@@ -18,7 +16,6 @@ export class TasksService {
   constructor(
     private taskApiService: TaskApiService,
     private userApiService: UserApiService,
-    private dialog: Dialog,
   ) {}
 
   getTasks(): Observable<Task[]> {
@@ -28,41 +25,11 @@ export class TasksService {
     );
   }
 
-  createTask(): Observable<any> {
+  getAvailableUsers(task?: Task): Observable<User[]> {
     return this.userApiService.getAllUsers().pipe(
       takeUntil(this.destroy),
-      tap((users: User[]) => {
-        const availableUsers = this.getUsersWithoutTask(users, this.tasks);
-        this.dialog.open(TaskDialogComponent, {
-          minWidth: '300px',
-          data: {
-            mode: 'create',
-            users: availableUsers,
-            save: (task: Task) => {
-              this.taskApiService.createTask(task).pipe(takeUntil(this.destroy)).subscribe();
-            },
-          },
-        });
-      }),
-    );
-  }
-
-  editTask(task: Task): Observable<any> {
-    return this.userApiService.getAllUsers().pipe(
-      takeUntil(this.destroy),
-      tap((users: User[]) => {
-        const availableUsers = this.getUsersWithoutTask(users, this.tasks, task);
-        this.dialog.open(TaskDialogComponent, {
-          minWidth: '300px',
-          data: {
-            mode: 'edit',
-            task: task,
-            users: availableUsers,
-            save: (modifiedTask: Task) => {
-              this.taskApiService.editTask(task.id, modifiedTask).pipe(takeUntil(this.destroy)).subscribe();
-            },
-          },
-        });
+      map((users) => {
+        return this.getUsersWithoutTask(users, this.tasks, task);
       }),
     );
   }

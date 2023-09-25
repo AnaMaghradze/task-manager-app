@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Task, User } from '@core/models';
 import { map, Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
-import { UserDialogComponent } from './user-dialog';
 import { TaskApiService, UserApiService } from '@core/services';
-import { Dialog } from '@angular/cdk/dialog';
 import { AutoDestroy } from '@core/utils';
 import { UserTaskAssignmentFilterType } from './users.component';
 
@@ -18,7 +16,6 @@ export class UsersService {
   constructor(
     private userApiService: UserApiService,
     private taskApiService: TaskApiService,
-    private dialog: Dialog,
   ) {}
 
   getAllUsers(): Observable<User[]> {
@@ -54,45 +51,6 @@ export class UsersService {
     );
   }
 
-  editUser(user: User): Observable<User[]> {
-    return this.userApiService.getAllUsers().pipe(
-      tap((users: User[]) => {
-        this.dialog.open(UserDialogComponent, {
-          minWidth: '300px',
-          maxWidth: '600px',
-          data: {
-            title: 'Edit User',
-            mode: 'edit',
-            users: users,
-            user: user,
-            save: (modifiedUser: User) => {
-              this.saveUser(user.id, modifiedUser).subscribe();
-            },
-          },
-        });
-      }),
-    );
-  }
-
-  createUser(): Observable<any> {
-    return this.userApiService.getAllUsers().pipe(
-      takeUntil(this.destroy),
-      tap((users: User[]) => {
-        this.dialog.open(UserDialogComponent, {
-          minWidth: '300px',
-          maxWidth: '600px',
-          data: {
-            mode: 'create',
-            users: users,
-            save: (user: User) => {
-              this.userApiService.createUser(user).pipe(takeUntil(this.destroy)).subscribe();
-            },
-          },
-        });
-      }),
-    );
-  }
-
   deleteUser(userId: string): Observable<any> {
     return this.userApiService.deleteUser(userId).pipe(
       takeUntil(this.destroy),
@@ -119,7 +77,7 @@ export class UsersService {
               ...task,
               assignedUser: modifiedUser,
             })
-          : of();
+          : of(null);
       }),
     );
   }

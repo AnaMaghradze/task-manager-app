@@ -25,7 +25,7 @@ export class TaskApiService {
       ...taskToDuplicate,
       id: generateUUID(),
       state: 'in queue',
-      assignedUser: null, /* remove assigned user as the same user cannot be assigned to more than one task */
+      assignedUser: null /* remove assigned user as the same user cannot be assigned to more than one task */,
       dateCreated: new Date(),
       dateModified: new Date(),
     };
@@ -90,5 +90,5 @@ const TASKS: Task[] = [
     priority: 'low',
     state: 'done',
     assignedUser: { name: 'Harry Potter', id: '1' },
-  }
+  },
 ];

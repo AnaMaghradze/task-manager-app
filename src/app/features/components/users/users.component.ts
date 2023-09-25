@@ -2,17 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkContextMenuTrigger, CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
 import { PageLayoutComponent } from '@shared/components';
-import { Observable, Subject, takeUntil } from 'rxjs';
-import { DialogModule } from '@angular/cdk/dialog';
+import { Observable, Subject, takeUntil, tap } from 'rxjs';
+import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { FormsModule } from '@angular/forms';
-import { TaskApiService } from '@core/services';
+import { TaskApiService, UserApiService } from '@core/services';
 import { User, Task } from '@core/models';
 import { AutoDestroy } from '@core/utils';
 import { UsersService } from './users.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
+import { UserDialogComponent } from './user-dialog';
 
 @Component({
   selector: 'tm-users',
@@ -55,7 +56,9 @@ export class UsersComponent implements OnInit {
 
   constructor(
     private taskApiService: TaskApiService,
+    private userApiService: UserApiService,
     private usersService: UsersService,
+    private dialog: Dialog,
   ) {}
 
   ngOnInit(): void {
@@ -73,18 +76,60 @@ export class UsersComponent implements OnInit {
   }
 
   createUser(): void {
-    this.usersService.createUser().subscribe();
+    this.userApiService
+      .getAllUsers()
+      .pipe(
+        takeUntil(this.destroy),
+        tap((users: User[]) => {
+          this.dialog.open(UserDialogComponent, {
+            minWidth: '300px',
+            maxWidth: '600px',
+            data: {
+              mode: 'create',
+              users: users,
+              save: (user: User) => {
+                this.userApiService
+                  .createUser(user)
+                  .pipe(takeUntil(this.destroy))
+                  .subscribe(() => this.getUsers());
+              },
+            },
+          });
+        }),
+      )
+      .subscribe();
   }
 
   editUser(user: User | null): void {
     if (!user) return;
-    this.usersService.editUser(user).pipe(takeUntil(this.destroy)).subscribe();
+    this.userApiService
+      .getAllUsers()
+      .pipe(
+        takeUntil(this.destroy),
+        tap((users: User[]) => {
+          this.dialog.open(UserDialogComponent, {
+            minWidth: '300px',
+            maxWidth: '600px',
+            data: {
+              title: 'Edit User',
+              mode: 'edit',
+              users: users,
+              user: user,
+              save: (modifiedUser: User) => {
+                this.selectedUser = null;
+                this.usersService.saveUser(user.id, modifiedUser).subscribe(() => this.getUsers());
+              },
+            },
+          });
+        }),
+      )
+      .subscribe();
   }
 
   deleteUser(user: User | null): void {
     if (!user) return;
-    this.usersService.deleteUser(user.id).subscribe();
     this.selectedUser = null;
+    this.usersService.deleteUser(user.id).subscribe(() => this.getUsers());
   }
 
   handleFilter(): void {

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PageLayoutComponent, TagComponent } from '@shared/components';
-import { AutoDestroy, Task, TaskPriority, TaskState } from 'src/app/core';
+import { AutoDestroy, Task, TaskApiService, TaskPriority, TaskState, User } from 'src/app/core';
 import { CdkContextMenuTrigger, CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
-import { Observable, Subject } from 'rxjs';
-import { DialogModule } from '@angular/cdk/dialog';
+import { Observable, Subject, takeUntil, tap } from 'rxjs';
+import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { TaskDialogComponent } from './task-dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -52,7 +52,11 @@ export class TasksComponent implements OnInit {
     return this.tasksService.tasks.length;
   }
 
-  constructor(private tasksService: TasksService) {}
+  constructor(
+    private tasksService: TasksService,
+    private taskApiService: TaskApiService,
+    private dialog: Dialog,
+  ) {}
 
   ngOnInit(): void {
     this.tasks$ = this.tasksService.getTasks();
@@ -64,23 +68,64 @@ export class TasksComponent implements OnInit {
   }
 
   createTask(): void {
-    this.tasksService.createTask().pipe().subscribe();
+    this.tasksService
+      .getAvailableUsers()
+      .pipe(
+        tap((availableUsers: User[]) => {
+          this.dialog.open(TaskDialogComponent, {
+            minWidth: '300px',
+            data: {
+              mode: 'create',
+              users: availableUsers,
+              save: (task: Task) => {
+                this.taskApiService
+                  .createTask(task)
+                  .pipe(takeUntil(this.destroy))
+                  .subscribe(() => (this.tasks$ = this.tasksService.getTasks()));
+              },
+            },
+          });
+        }),
+      )
+      .subscribe();
   }
 
   editTask(task: Task | null): void {
     if (!task) return;
-    this.tasksService.editTask(task).subscribe();
+    this.tasksService
+      .getAvailableUsers(task)
+      .pipe(
+        tap((availableUsers: User[]) => {
+          this.dialog.open(TaskDialogComponent, {
+            minWidth: '300px',
+            data: {
+              mode: 'edit',
+              task: task,
+              users: availableUsers,
+              save: (modifiedTask: Task) => {
+                this.selectedTask = null;
+                this.taskApiService
+                  .editTask(task.id, modifiedTask)
+                  .pipe(takeUntil(this.destroy))
+                  .subscribe(() => (this.tasks$ = this.tasksService.getTasks()));
+              },
+            },
+          });
+        }),
+      )
+      .subscribe();
   }
 
   duplicateTask(task: Task): void {
     if (!task) return;
-    this.tasksService.duplicateTask(task).subscribe();
+    this.selectedTask = null;
+    this.tasksService.duplicateTask(task).subscribe(() => (this.tasks$ = this.tasksService.getTasks()));
   }
 
   deleteTask(task: Task | null): void {
     if (!task) return;
-    this.tasksService.deleteTask(task).subscribe();
     this.selectedTask = null;
+    this.tasksService.deleteTask(task).subscribe(() => (this.tasks$ = this.tasksService.getTasks()));
   }
 
   handleFilter(): void {
