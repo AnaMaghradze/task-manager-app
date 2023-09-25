@@ -1,5 +1,9 @@
 @import 'src/styles';
 
+tm-page-layout {
+  background: $primary-gray;
+}
+
 .header {
   position: relative;
   padding-bottom: 40px;
@@ -21,6 +25,7 @@
 .content {
   display: flex;
   flex-direction: column;
+  background: $primary-gray;
 }
 
 .footer {

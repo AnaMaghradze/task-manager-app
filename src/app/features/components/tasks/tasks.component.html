@@ -43,7 +43,7 @@
         </mat-select>
       </div>
     </div>
-    <div class="tasks-container">
+    <div class="tasks-container custom-scroll">
       <ng-container *ngIf="tasks$ | async as tasks; else loading">
         <table class="animate">
           <thead>

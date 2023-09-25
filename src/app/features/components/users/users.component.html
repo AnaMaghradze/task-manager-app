@@ -40,13 +40,13 @@
         </mat-select>
       </div>
     </div>
-    <div class="users-container">
+    <div class="users-container custom-scroll">
       <ng-container *ngIf="users$ | async as users; else loading">
         <table class="animate">
           <thead>
             <tr>
               <th>
-                <div class="center"><img src="task-manager-app/assets/icons/user.png" alt="user" width="25px" />User</div>
+                <div class="center"><img src="task-manager/assets/icons/user.png" alt="user" width="25px" />User</div>
               </th>
               <th>Assigned Task</th>
             </tr>
